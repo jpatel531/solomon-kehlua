@@ -1,11 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 	s "strings"
 )
@@ -55,7 +55,16 @@ func upload(_file file, uploads chan<- bool, client *s3.S3, bucket *s3.Bucket) {
 
 func main() {
 
-	dirname := "./public-test"
+	dirnamePtr := flag.String("folder", "", "the older where the assets reside")
+
+	flag.Parse()
+
+	dirname := *dirnamePtr
+
+	if dirname == "" {
+		fmt.Println("`folder` must be specified")
+		return
+	}
 
 	var files []file
 
@@ -67,7 +76,7 @@ func main() {
 
 	auth, err := aws.EnvAuth()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	client := s3.New(auth, aws.USEast)
