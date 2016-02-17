@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	s "strings"
@@ -52,7 +53,10 @@ func prepareFilesInDir(localDir, s3Dir string, files *[]file) {
 }
 
 func upload(_file file, uploads chan<- bool, client *s3.S3, bucket *s3.Bucket) {
-	bucket.Put(_file.path, _file.data, _file.contentType, permissions)
+	err := bucket.Put(_file.path, _file.data, _file.contentType, permissions)
+	if err != nil {
+		panic(err)
+	}
 	uploads <- true
 	fmt.Printf("Uploaded %s!\n", _file.path)
 }
@@ -88,6 +92,7 @@ func main() {
 	auth, err := aws.EnvAuth()
 	if err != nil {
 		panic(err)
+		os.Exit(1)
 	}
 
 	client := s3.New(auth, aws.USEast)
