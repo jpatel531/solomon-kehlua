@@ -54,7 +54,7 @@ func prepareFilesInDir(localDir, s3Dir string, files *[]file) {
 
 func upload(_file file, uploads chan<- bool, client *s3.S3, bucket *s3.Bucket) {
 	err := bucket.Put(_file.path, _file.data, _file.contentType, permissions)
-	if err != nil
+	if err != nil {
 		fmt.Printf("UPLOAD ERROR: %+v\n", err)
 		panic(err)
 	}
